@@ -14,6 +14,14 @@ curl -fsSL https://raw.githubusercontent.com/coree-ai/kiro/main/.kiro/settings/m
   -o .kiro/settings/mcp.json
 ```
 
+Also copy the steering doc so Kiro knows how to use coree:
+
+```sh
+mkdir -p .kiro/steering
+curl -fsSL https://raw.githubusercontent.com/coree-ai/kiro/main/.kiro/steering/coree.md \
+  -o .kiro/steering/coree.md
+```
+
 Kiro picks up workspace settings automatically. Restart Kiro after copying.
 
 ### Global scope
@@ -21,9 +29,11 @@ Kiro picks up workspace settings automatically. Restart Kiro after copying.
 To enable coree for all projects, copy the config to `~/.kiro/settings/mcp.json`:
 
 ```sh
-mkdir -p ~/.kiro/settings
+mkdir -p ~/.kiro/settings ~/.kiro/steering
 curl -fsSL https://raw.githubusercontent.com/coree-ai/kiro/main/.kiro/settings/mcp.json \
   -o ~/.kiro/settings/mcp.json
+curl -fsSL https://raw.githubusercontent.com/coree-ai/kiro/main/.kiro/steering/coree.md \
+  -o ~/.kiro/steering/coree.md
 ```
 
 Workspace settings take precedence over global settings.
@@ -34,7 +44,7 @@ Open Kiro settings and navigate to **MCP Servers** to add the server via the UI.
 Use the following values:
 
 - **Command**: `npx`
-- **Args**: `--yes @coree-ai/coree@0.13.0 serve`
+- **Args**: `--yes @coree-ai/coree@0.14.1 serve`
 
 ## Config Reference
 
@@ -46,13 +56,15 @@ The `.kiro/settings/mcp.json` in this repo includes Kiro-specific fields:
 | `autoApprove` | (list) | Tool names that don't need user confirmation |
 | `disabledTools` | `[]` | No tools excluded |
 
-The `autoApprove` list covers all coree tools so the agent can read and store
-memories without prompting you on every call:
+Non-destructive tools are auto-approved so the agent can read and store memories
+without prompting on every call. Destructive tools (`delete_memories`,
+`evict_stale_memories`) and the outward-facing `remote_sync` still require
+confirmation:
 
 ```
 search, search_code, search_memory, store_memories, get_memories,
-list_memories, capture_note, get_symbol, session_context,
-list_stale_memories, evict_stale_memories, pin_memories, delete_memories
+list_memories, get_symbol, session_context, list_stale_memories,
+pin_memories, diagnose
 ```
 
 ## Environment Variables
@@ -73,7 +85,7 @@ Kiro inherits env vars from the shell that launched it. Variable substitution
 
 Open Kiro and start an agent session. Ask: `What coree tools are available?`
 
-The agent should list tools like `search`, `store_memories`, `capture_note`, etc.
+The agent should list tools like `search`, `store_memories`, `get_symbol`, etc.
 
 ## Requirements
 
